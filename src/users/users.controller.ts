@@ -28,9 +28,12 @@ export class UsersController {
   }
 
   @Get('/:userId/followers')
-  getUserfollowers(): string {
+  getUserfollowers(@Param() param): string {
     return 'get user followers';
   }
 
-  // @Put('/:userId/followers')
+  @Put('/:userId/followers')
+  getUsersfollowers(): string {
+    return `get followers o given user`;
+  }
 }
