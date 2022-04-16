@@ -4,9 +4,11 @@ import { AppService } from './app.service';
 import { UsersController } from './users/users.controller';
 import { PostsController } from './posts/posts.controller';
 import { HashtagsController } from './hashtags/hashtags.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeormConfig } from './config/typeorm.config';
 
 @Module({
-  imports: [],
+  imports: [TypeOrmModule.forRoot(typeormConfig)],
   controllers: [
     AppController,
     UsersController,
