@@ -1,20 +1,29 @@
 import { Controller, Delete, Get, Param, Patch, Put } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { UsersService } from './users.service';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
+  constructor(private userService: UsersService) {}
+
   @Get('/@:username')
-  getUserByUsername(@Param() param): string {
-    return `details of username = ${param.username}`;
+  async getUserByUsername(@Param('username') username: string): Promise<any> {
+    const user = await this.userService.getUserByUsername(username);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
   }
 
   @Get('/:userId')
-  getUserById(@Param() param): string {
-    return `details of username = ${param.userId}`;
+  getUserById(@Param('userId') userId: string): string {
+    return `details of username = ${userId}`;
   }
 
   @Patch('/:userId')
-  updateUserDetails(@Param() param): string {
-    return `details of user (id = ${param.userId}) updated`;
+  updateUserDetails(@Param('userId') userId: string): string {
+    return `details of user (id = ${userId}) updated`;
   }
 
   @Put('/:userId/follow')
