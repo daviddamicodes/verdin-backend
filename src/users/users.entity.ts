@@ -1,7 +1,8 @@
 import { VerdinBaseEntity } from 'src/commons/base.entity';
 import { Column, Entity } from 'typeorm';
 
-@Entity('users')
+// @Entity('users')
+@Entity()
 export class UserEntity extends VerdinBaseEntity {
   @Column({ length: 30, nullable: false, unique: true })
   username: string;
