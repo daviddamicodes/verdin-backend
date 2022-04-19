@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, Param, Patch, Put } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 
@@ -11,7 +19,7 @@ export class UsersController {
   async getUserByUsername(@Param('username') username: string): Promise<any> {
     const user = await this.userService.getUserByUsername(username);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
     return user;
   }
