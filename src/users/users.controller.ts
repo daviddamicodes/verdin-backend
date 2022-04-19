@@ -1,13 +1,16 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   NotFoundException,
   Param,
   Patch,
+  Post,
   Put,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { CreateUserRequestBody } from 'src/dto/createUserDto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -25,8 +28,20 @@ export class UsersController {
   }
 
   @Get('/:userId')
-  getUserById(@Param('userId') userId: string): string {
-    return `details of username = ${userId}`;
+  async getUserById(@Param('userId') userId: string): Promise<any> {
+    const user = await this.userService.getUserByUserId(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  @Post('/')
+  async createNewUser(
+    @Body() createUserRequestBody: CreateUserRequestBody,
+  ): Promise<any> {
+    const user = this.userService.createUser(createUserRequestBody);
+    return user;
   }
 
   @Patch('/:userId')

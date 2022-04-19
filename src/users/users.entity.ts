@@ -7,10 +7,13 @@ export class UserEntity extends VerdinBaseEntity {
   @Column({ length: 30, nullable: false, unique: true })
   username: string;
 
-  @Column({ length: 50 })
+  @Column({ nullable: true, length: 50 })
+  name: string;
+
+  @Column({ nullable: true })
   avatar: string;
 
-  @Column({ length: 240 })
+  @Column({ nullable: true, length: 240 })
   bio: string;
 
   @Column({ name: 'follower_count', default: 0 })
