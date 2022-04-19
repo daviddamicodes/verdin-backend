@@ -1,5 +1,16 @@
-import { Controller, Delete, Get, Param, Patch, Put } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { CreateUserRequestBody } from 'src/dto/createUserDto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -11,14 +22,26 @@ export class UsersController {
   async getUserByUsername(@Param('username') username: string): Promise<any> {
     const user = await this.userService.getUserByUsername(username);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
     return user;
   }
 
   @Get('/:userId')
-  getUserById(@Param('userId') userId: string): string {
-    return `details of username = ${userId}`;
+  async getUserById(@Param('userId') userId: string): Promise<any> {
+    const user = await this.userService.getUserByUserId(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  @Post('/')
+  async createNewUser(
+    @Body() createUserRequestBody: CreateUserRequestBody,
+  ): Promise<any> {
+    const user = this.userService.createUser(createUserRequestBody);
+    return user;
   }
 
   @Patch('/:userId')
