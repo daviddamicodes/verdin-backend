@@ -10,7 +10,11 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { CreateUserRequestBody } from 'src/dto/createUserDto';
+import {
+  CreateUserRequestBody,
+  UpdateUserRequestBody,
+} from 'src/dto/createUserDto';
+import { UserEntity } from './users.entity';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -39,14 +43,21 @@ export class UsersController {
   @Post('/')
   async createNewUser(
     @Body() createUserRequestBody: CreateUserRequestBody,
-  ): Promise<any> {
-    const user = this.userService.createUser(createUserRequestBody);
+  ): Promise<UserEntity> {
+    const user = await this.userService.createUser(
+      createUserRequestBody,
+      createUserRequestBody.password,
+    );
     return user;
   }
 
   @Patch('/:userId')
-  updateUserDetails(@Param('userId') userId: string): string {
-    return `details of user (id = ${userId}) updated`;
+  async updateUserDetails(
+    @Param('userId') userId: string,
+    @Body() updateUserRequestBody: UpdateUserRequestBody,
+  ): Promise<any> {
+    const user = this.userService.updateUser(userId, updateUserRequestBody);
+    return user;
   }
 
   @Put('/:userId/follow')

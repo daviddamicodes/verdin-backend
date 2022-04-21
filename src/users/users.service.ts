@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PasswordEntity } from 'src/auth/paswords.entity';
 import { Repository } from 'typeorm';
 import { UserEntity } from './users.entity';
 
@@ -7,7 +8,9 @@ import { UserEntity } from './users.entity';
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
-    private usersRepo: Repository<UserEntity>,
+    private userRepo: Repository<UserEntity>,
+    @InjectRepository(PasswordEntity)
+    private passwordRepo: Repository<PasswordEntity>,
   ) {}
 
   /**
@@ -15,7 +18,7 @@ export class UsersService {
    * @returns {Promise<UserEntity>} user if found
    */
   public async getUserByUsername(username: string): Promise<UserEntity> {
-    return await this.usersRepo.findOne({ where: { username } });
+    return await this.userRepo.findOne({ where: { username } });
   }
 
   /**
@@ -23,14 +26,46 @@ export class UsersService {
    * @returns {Promise<UserEntity>} user if found
    */
   public async getUserByUserId(userId: string): Promise<UserEntity> {
-    return await this.usersRepo.findOne({ where: { id: userId } });
+    return await this.userRepo.findOne({ where: { id: userId } });
   }
 
   /**
    * @description find all user by userId
    * @returns {Promise<UserEntity>} user if created
    */
-  public async createUser(user: Partial<UserEntity>): Promise<UserEntity> {
-    return await this.usersRepo.create(user);
+  public async createUser(
+    user: Partial<UserEntity>,
+    password: string,
+  ): Promise<UserEntity> {
+    const newUser = await this.userRepo.save(user);
+
+    const userPassword = new PasswordEntity();
+    userPassword.user = newUser;
+    userPassword.password = password;
+    await this.passwordRepo.save(userPassword);
+
+    return newUser;
+    // return await this.userRepo.save(user);
+  }
+
+  /**
+   * @description find all user with given details
+   * @returns {Promise<UserEntity>} user if updated
+   */
+  public async updateUser(
+    userId: string,
+    newUserDetails: Partial<UserEntity>,
+  ): Promise<UserEntity> {
+    const existingUser = await this.userRepo.findOne({
+      where: { id: userId },
+    });
+    if (!existingUser) {
+      return null;
+    }
+    if (newUserDetails.bio) existingUser.bio = newUserDetails.bio;
+    if (newUserDetails.avatar) existingUser.avatar = newUserDetails.avatar;
+    if (newUserDetails.name) existingUser.name = newUserDetails.name;
+
+    return await this.userRepo.save(existingUser);
   }
 }

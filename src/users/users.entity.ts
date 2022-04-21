@@ -1,8 +1,8 @@
+import { PasswordEntity } from 'src/auth/paswords.entity';
 import { VerdinBaseEntity } from 'src/commons/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 
-// @Entity('users')
-@Entity()
+@Entity('users')
 export class UserEntity extends VerdinBaseEntity {
   @Column({ length: 30, nullable: false, unique: true })
   username: string;
@@ -10,7 +10,7 @@ export class UserEntity extends VerdinBaseEntity {
   @Column({ nullable: true, length: 50 })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 50 })
   avatar: string;
 
   @Column({ nullable: true, length: 240 })
@@ -24,4 +24,10 @@ export class UserEntity extends VerdinBaseEntity {
 
   @Column('boolean', { default: false })
   verified: boolean;
+
+  @OneToOne((type) => PasswordEntity, (password) => password.user, {
+    lazy: true,
+    cascade: true,
+  })
+  userPassword: PasswordEntity;
 }
