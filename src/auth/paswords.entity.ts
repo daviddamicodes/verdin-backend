@@ -4,7 +4,10 @@ import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity('passwords')
 export class PasswordEntity extends VerdinBaseEntity {
-  @JoinColumn()
+  @Column()
+  userId: string;
+
+  @JoinColumn({ name: 'userId' })
   @OneToOne(() => UserEntity)
   user: UserEntity;
 
