@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { Repository } from 'typeorm';
@@ -36,6 +40,19 @@ export class UsersService {
     user: Partial<UserEntity>,
     password: string,
   ): Promise<UserEntity> {
+    if (user.username.length < 5) {
+      throw new BadRequestException('Username must be minimum of 8 characters');
+    }
+
+    if (password.length < 5) {
+      throw new BadRequestException('Password must be minimum of 5 characters');
+    }
+
+    const usernameExists = await this.getUserByUsername(user.username);
+    if (usernameExists) {
+      throw new ConflictException('Username already exists');
+    }
+
     const newUser = await this.userRepo.save(user);
 
     await this.authService.createPasswordForNewUser(newUser.id, password);
